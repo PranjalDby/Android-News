@@ -23,15 +23,11 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".webActivity.WebViewActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".Science"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Logon"
+            android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -49,9 +45,6 @@
             android:name=".Bussiness"
             android:exported="false"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true" />
 
         <meta-data
             android:name="preloaded_fonts"

@@ -4,10 +4,10 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -16,6 +16,7 @@ import android.widget.SearchView
 import android.widget.SearchView.OnQueryTextListener
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -41,11 +42,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchView: SearchView
     private var country:String = ""
     private var flag = 0;
+    private lateinit var main_activity: SharedPreferences;
     @SuppressLint("MissingInflatedId", "AppCompatMethod")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.pager_adapter)
-        factory = MainActivityViewModelFactory("technology","in")
+        main_activity = getSharedPreferences("com.android.architecture"+1, MODE_PRIVATE)
+        val editor = main_activity.edit();
+        println("Initiallly " + country)
+        if (country == ""){
+            country = main_activity.getString("country","us")!!
+        }
+        println("After Updayion" +
+                " " + country)
+        factory = MainActivityViewModelFactory("technology",country)
         model = ViewModelProvider(this, factory)[AppViewModel::class.java]
         recyclerView = findViewById(R.id.recycler)
         progressBar = findViewById(R.id.progress)
@@ -60,6 +70,7 @@ class MainActivity : AppCompatActivity() {
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
         navigationView.setNavigationItemSelectedListener {
             if (it.itemId == R.id.bussiness && country!="") {
                 val ii = Intent(this, Bussiness::class.java)
@@ -79,6 +90,10 @@ class MainActivity : AppCompatActivity() {
             else if (it.itemId == R.id.country){
                 val getcountry =  Intent(this,ChooseCountry::class.java);
                 startActivityForResult(getcountry,100)
+                if (country != ""){
+                    editor.putString("country",country)
+                    editor.apply()
+                }
             }
             false
         }
@@ -87,14 +102,11 @@ class MainActivity : AppCompatActivity() {
 //        search view instance saved
         if(savedInstanceState!=null){
             searchQuery = savedInstanceState.getString("search")
-            country = savedInstanceState.getString("cntry").toString()
-            flag = savedInstanceState.getInt("flag")
         }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        country = savedInstanceState.getString("cntry","in")
         flag = savedInstanceState.getInt("flag",0);
     }
     private fun loadData(flg:Int) {
@@ -130,10 +142,6 @@ class MainActivity : AppCompatActivity() {
             flag = 1
             fetchData()
         }
-        else{
-            //
-        }
-        println(country)
     }
     fun checkConnection():Boolean{
         reciever = ConnectionManager()
@@ -204,7 +212,12 @@ class MainActivity : AppCompatActivity() {
         loadData(flag)
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onStart() {
+        super.onStart()
+        if (country =="" && main_activity.contains("country") && main_activity.getString("country","") != ""){
+            country = main_activity.getString("country","us")!!
+            println("Onstart + MAIN ACTIVITY "+country)
+        }
+        println("Onstart + ELSE + "+country)
     }
 }

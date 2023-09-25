@@ -8,11 +8,8 @@ import com.android.architecture.repository.Repository
 class AppViewModel(var category:String,var country: String):ViewModel(){
     private var articleRepo:Repository = Repository()
     private lateinit var articleResponseLiveData:LiveData<ResponseModels>
-    private lateinit var articleQueryResult:LiveData<ResponseModels>
-    private lateinit var cntry: String
     fun getDashBoardLive():LiveData<ResponseModels>{
-        this.cntry = country
-        articleResponseLiveData = articleRepo.getDahsBoard(category = category,cntry)
+        articleResponseLiveData = articleRepo.getDahsBoard(category = category,country)
         return articleResponseLiveData
     }
 }
